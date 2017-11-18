@@ -38,14 +38,8 @@ export class MiddlEmitter {
 
       const itr = middleWares.values();
 
-      const next = async(...newParams) => {
+      const next = async() => {
         const middleWare = itr.next();
-
-        if (newParams && newParams.length) {
-          newParams.forEach((item, i)=> {
-            params[i] = item
-          });
-        }
 
         if (middleWare.value) {
           await middleWare.value(params, next);
