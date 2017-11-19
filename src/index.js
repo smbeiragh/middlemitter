@@ -12,6 +12,20 @@ function getHandler(map, eventName) {
   }
 }
 
+async function applyMiddleWare(middleWares, params) {
+  const itr = middleWares.values();
+
+  const next = async() => {
+    const middleWare = itr.next();
+
+    if (middleWare.value) {
+      await middleWare.value(params, next);
+    }
+  };
+
+  await next();
+}
+
 export class MiddlEmitter {
   constructor() {
     this.meta = {events:{}, middleWares:{}};
@@ -22,9 +36,10 @@ export class MiddlEmitter {
   }
   once(eventName, fn, priority) {
     const handler = this.on(eventName, (...params) => {
-      fn(...params);
       this.off(eventName, handler);
+      return fn(...params);
     }, priority);
+    return handler;
   }
   off(eventName, fn) {
     const handler = getHandler(this.meta.events, eventName);
@@ -35,24 +50,40 @@ export class MiddlEmitter {
     const middleWares = getHandler(this.meta.middleWares, eventName);
 
     if(!middleWares.isEmpty()) {
-
-      const itr = middleWares.values();
-
-      const next = async() => {
-        const middleWare = itr.next();
-
-        if (middleWare.value) {
-          await middleWare.value(params, next);
-        }
-      };
-
-      await next();
-
+      await applyMiddleWare(middleWares, params);
     }
 
-    for(let fn of handler) {
-      fn(...params);
-    }
+    const itr = handler.values();
+
+    let nextListener;
+
+    let hasListeners = false;
+
+    const next = () => {
+      return new Promise((resolve, reject) => {
+        setTimeout(async()=> {
+          try {
+            nextListener = itr.next();
+            const fn = nextListener.value;
+            if (fn) {
+              hasListeners = true;
+              const result = fn(...params);
+              if (result && typeof result.then === 'function') {
+                await result;
+              }
+              await next();
+              resolve(hasListeners);
+            } else {
+              resolve(hasListeners);
+            }
+          } catch (err) {
+            reject(err);
+          }
+        }, 0);
+      });
+    };
+
+    return next();
   }
   use(eventName, fn, priority) {
     const handler = getHandler(this.meta.middleWares, eventName);

@@ -2,11 +2,13 @@
  * Created by sajjad on 11/16/17.
  */
 
+// TODO: provide more performance/memory efficient solution (a priority queue)
 export function createListenerHandler() {
   const listeners = [];
 
   return {
     isEmpty() {
+      // TODO: provide a more reliable solution
       return listeners.length === 0;
     },
     add(fn, priority = 0) {
@@ -29,6 +31,7 @@ export function createListenerHandler() {
     values() {
       return this[Symbol.iterator]();
     },
+    // TODO: provide a more performance efficient solution
     [Symbol.iterator]() {
       let stepI = -1;
       let stepJ = 0;
