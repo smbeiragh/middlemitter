@@ -61,7 +61,7 @@ export class MiddlEmitter {
 
     const next = () => {
       return new Promise((resolve, reject) => {
-        setTimeout(async()=> {
+        setImmediate(async()=> {
           try {
             nextListener = itr.next();
             const fn = nextListener.value;
@@ -79,7 +79,7 @@ export class MiddlEmitter {
           } catch (err) {
             reject(err);
           }
-        }, 0);
+        });
       });
     };
 
