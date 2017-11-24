@@ -39,11 +39,12 @@ export class MiddlEmitter {
       this.off(eventName, handler);
       return fn(...params);
     }, priority);
-    return handler;
+    fn.wraper = handler;
+    return fn;
   }
   off(eventName, fn) {
     const handler = getHandler(this.meta.events, eventName);
-    return handler.remove(fn);
+    handler.remove(fn.wraper || fn);
   }
   async emit(eventName, ...params) {
     const handler = getHandler(this.meta.events, eventName);

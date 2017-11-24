@@ -5,7 +5,7 @@
   "author": "smbeiragh <smbeiragh@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "test": "mocha",
+    "test": "mocha --require babel-register",
     "start": "",
     "babel": "./node_modules/.bin/babel src --out-dir build",
     "serve": "babel src --out-dir build --watch",
