@@ -112,7 +112,7 @@ describe('MiddlEmitter basic functionality', function() {
     it('should apply middleware', function() {
       const emitter = new MiddlEmitter();
       let receivedParams;
-      emitter.once('test', (...params) => {
+      emitter.on('test', (...params) => {
         receivedParams = params;
       });
       emitter.use('test', async (params, next) => {
