@@ -82,7 +82,7 @@ describe('MiddlEmitter basic functionality', function() {
   });
 
   describe('#emit', function() {
-    it('should remove pass many parameters to listeners', function() {
+    it('should pass many parameters to listeners', function() {
       const emitter = new MiddlEmitter();
       let receivedParams;
       emitter.once('test', (...params) => {
@@ -90,6 +90,20 @@ describe('MiddlEmitter basic functionality', function() {
       });
       return emitter.emit('test',1,2,3).then(()=>{
         expect(receivedParams).to.deep.equal([1,2,3]);
+      });
+    });
+
+    it('should execute listeners on order', function() {
+      const emitter = new MiddlEmitter();
+      let calls = [];
+      emitter.on('test', () => {
+        calls.push(1);
+      });
+      emitter.on('test', () => {
+        calls.push(2);
+      });
+      return emitter.emit('test').then(() => {
+        expect(calls).to.deep.equal([1,2]);
       });
     });
   });
