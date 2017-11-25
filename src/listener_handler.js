@@ -3,26 +3,48 @@
  */
 
 // TODO: provide more performance/memory efficient solution (a priority queue)
-export function createListenerHandler() {
+export function createListenerHandler({name}) {
   const listeners = [];
 
+  function getListenerMeta(fn){
+    if (!('me' in fn)) {
+      const meta = {};
+      fn.me =  { [name] : meta };
+      return meta;
+    } else {
+      const me = fn.me;
+      if(!(name in me)) {
+        const meta = {};
+        me[name] = meta;
+        return meta;
+      } else {
+        return me[name];
+      }
+    }
+  }
+
   return {
+    getListenerMeta(fn){
+      return getListenerMeta(fn);
+    },
     isEmpty() {
-      // TODO: provide a more reliable solution
+      // TODO: provide a more reliable and efficient solution
       return listeners.length === 0;
     },
     add(fn, priority = 0) {
       const priorityListeners = listeners[priority] || (listeners[priority] = []);
       priorityListeners.push(fn);
-      fn.priority = priority;
-      fn.index = priorityListeners.length - 1;
+      const meta = getListenerMeta(fn);
+      meta.priority = priority;
+      meta.index = priorityListeners.length - 1;
       return fn;
     },
     remove(fn) {
-      if(!'priority' in fn) {
+      const meta = getListenerMeta(fn);
+      if(!'me' in fn) {
         return;
       }
-      const { priority, index } = fn;
+      const { priority, index } = meta;
       const priorityListeners = listeners[priority] || (listeners[priority] = []);
       if (index >=0) {
         priorityListeners[index] = undefined;

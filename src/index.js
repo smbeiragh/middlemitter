@@ -8,7 +8,7 @@ function getHandler(map, eventName) {
   if (eventName in map) {
     return map[eventName];
   } else {
-    return map[eventName] = createListenerHandler();
+    return map[eventName] = createListenerHandler({name:eventName});
   }
 }
 
@@ -26,6 +26,24 @@ async function applyMiddleWare(middleWares, params) {
   await next();
 }
 
+function getListenerWrapperOfEvent(fn, eventName) {
+  if (!('wrappers' in fn)) {
+    return null;
+  } else {
+    return fn.wrappers[eventName] || null;
+  }
+}
+
+function setListenerWrapperOfEvent(fn, eventName, wrapper) {
+  if (!('wrappers' in fn)) {
+    const wrappers = {};
+    wrappers[eventName]  = wrapper;
+    fn.wrappers = wrappers;
+  } else {
+    fn.wrappers[eventName] = wrapper;
+  }
+}
+
 export class MiddlEmitter {
   constructor() {
     this.meta = {events:{}, middleWares:{}};
@@ -35,16 +53,17 @@ export class MiddlEmitter {
     return handler.add(fn, priority);
   }
   once(eventName, fn, priority) {
-    const handler = this.on(eventName, (...params) => {
-      this.off(eventName, handler);
+    const wrapper = this.on(eventName, (...params) => {
+      this.off(eventName, wrapper);
       return fn(...params);
     }, priority);
-    fn.wraper = handler;
+    setListenerWrapperOfEvent(fn, eventName, wrapper);
     return fn;
   }
   off(eventName, fn) {
     const handler = getHandler(this.meta.events, eventName);
-    handler.remove(fn.wraper || fn);
+    const wrapper = getListenerWrapperOfEvent(fn, eventName);
+    handler.remove(wrapper || fn);
   }
   async emit(eventName, ...params) {
     const handler = getHandler(this.meta.events, eventName);

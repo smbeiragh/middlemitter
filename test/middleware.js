@@ -5,10 +5,6 @@
 import chai, {expect, assert} from 'chai';
 import { MiddlEmitter } from './../src';
 
-const delay = (ms) => new Promise((resolve, reject) => {
-  setTimeout(() => { resolve(); }, ms);
-});
-
 //var assert = require('assert');
 describe('Middleware', function() {
   describe('#emit', function() {
@@ -30,7 +26,7 @@ describe('Middleware', function() {
       });
 
       return emitter.emit('test',[]).then(()=>{
-        expect(receivedCalls).to.deep.equal([1,2]);
+        expect(receivedCalls, 'expect to call middleware in order').to.deep.equal([1,2]);
       });
     });
 
@@ -42,7 +38,7 @@ describe('Middleware', function() {
       });
 
       emitter.use('test', async ([calls], next) => {
-        calls.push(4);
+        calls.push(5);
         await next();
       });
 
@@ -52,9 +48,14 @@ describe('Middleware', function() {
       }, 10);
 
       emitter.use('test', async ([calls], next) => {
-        calls.push(3);
+        calls.push(4);
         await next();
       }, 5);
+
+      emitter.use('test', async ([calls], next) => {
+        calls.push(3);
+        await next();
+      }, 10);
 
       emitter.use('test', async ([calls], next) => {
         calls.push(1);
@@ -62,7 +63,7 @@ describe('Middleware', function() {
       }, 15);
 
       return emitter.emit('test',[]).then(()=>{
-        expect(receivedCalls).to.deep.equal([1,2,3,4]);
+        expect(receivedCalls, 'expect to call middleware from height to low priority an in order').to.deep.equal([1,2,3,4,5]);
       });
     });
 
@@ -83,7 +84,7 @@ describe('Middleware', function() {
       });
 
       return emitter.emit('test',[]).then(()=>{
-        expect(receivedCalls).to.deep.equal([1]);
+        expect(receivedCalls, 'expect to skip next middleware').to.deep.equal([1]);
       });
     });
   });

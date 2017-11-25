@@ -17,7 +17,7 @@ describe('MiddlEmitter basic functionality', function() {
       let called = false;
       emitter.on('test', () => { called = true; });
       return emitter.emit('test').then(()=>{
-        expect(called).to.equal(true);
+        expect(called, 'expect to listener receive event').to.equal(true);
       });
     });
     it('should add isolate different events', function() {
@@ -27,10 +27,10 @@ describe('MiddlEmitter basic functionality', function() {
       emitter.on('test1', () => { test1Called = true; });
       emitter.on('test2', () => { test2Called = true; });
       return emitter.emit('test1').then(()=>{
-        expect(test2Called).to.equal(false);
+        expect(test2Called, 'expect to test2 listener not to receive event while emitting test1 event').to.equal(false);
         test1Called = false;
         return emitter.emit('test2').then(()=> {
-          expect(test1Called).to.equal(false);
+          expect(test1Called, 'expect to test1 listener not to receive event while emitting test2 event').to.equal(false);
         });
       });
     });
@@ -43,7 +43,7 @@ describe('MiddlEmitter basic functionality', function() {
       const listener = emitter.on('test', () => { called = true; });
       emitter.off('test', listener);
       return emitter.emit('test').then(()=>{
-        expect(called).to.equal(false);
+        expect(called, 'expect to remove listener').to.equal(false);
       });
     });
   });
@@ -55,7 +55,7 @@ describe('MiddlEmitter basic functionality', function() {
       const listener = emitter.once('test', () => { callCounter += 1; });
       return emitter.emit('test')
         .then(() => emitter.emit('test'))
-        .then(()=>{ expect(callCounter).to.equal(1); });
+        .then(()=>{ expect(callCounter, 'expect to receive only one emit').to.equal(1); });
     });
   });
 
@@ -66,9 +66,10 @@ describe('MiddlEmitter basic functionality', function() {
       const listener = emitter.once('test', () => { called = true; });
       emitter.off('test', listener);
       return emitter.emit('test').then(()=>{
-        expect(called).to.equal(false);
+        expect(called, 'expect to remove listener that\'s added via once, using return value of once method').to.equal(false);
       });
     });
+
     it('should remove listener added via once using listener itself', function() {
       const emitter = new MiddlEmitter();
       let called = false;
@@ -76,7 +77,7 @@ describe('MiddlEmitter basic functionality', function() {
       emitter.once('test', listener);
       emitter.off('test', listener);
       return emitter.emit('test').then(()=>{
-        expect(called).to.equal(false);
+        expect(called, 'expect to remove listener that\'s added via once, using listener reference').to.equal(false);
       });
     });
   });
@@ -89,7 +90,7 @@ describe('MiddlEmitter basic functionality', function() {
         receivedParams = params;
       });
       return emitter.emit('test',1,2,3).then(()=>{
-        expect(receivedParams).to.deep.equal([1,2,3]);
+        expect(receivedParams, 'expect to receive 1,2,3 as params').to.deep.equal([1,2,3]);
       });
     });
 
@@ -103,7 +104,7 @@ describe('MiddlEmitter basic functionality', function() {
         calls.push(2);
       });
       return emitter.emit('test').then(() => {
-        expect(calls).to.deep.equal([1,2]);
+        expect(calls, 'expect to exec listeners with same priority in the order they added').to.deep.equal([1,2]);
       });
     });
   });
@@ -120,7 +121,7 @@ describe('MiddlEmitter basic functionality', function() {
         await next();
       });
       return emitter.emit('test',1,2,3).then(()=>{
-        expect(receivedParams).to.deep.equal([2,3,4]);
+        expect(receivedParams, 'expect to apply middleware before executing of listeners').to.deep.equal([2,3,4]);
       });
     });
   });
