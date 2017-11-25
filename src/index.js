@@ -2,20 +2,21 @@
  * Created by sajjad on 11/15/17.
  */
 
-import {createListenerHandler} from './listener_handler';
+import createListenerHandler from './listener_handler';
 
 function getHandler(map, eventName) {
   if (eventName in map) {
     return map[eventName];
-  } else {
-    return map[eventName] = createListenerHandler({name:eventName});
   }
+  const handler = createListenerHandler({ name: eventName });
+  map[eventName] = handler;
+  return handler;
 }
 
 async function applyMiddleWare(middleWares, params) {
   const itr = middleWares.values();
 
-  const next = async() => {
+  const next = async () => {
     const middleWare = itr.next();
 
     if (middleWare.value) {
@@ -29,24 +30,23 @@ async function applyMiddleWare(middleWares, params) {
 function getListenerWrapperOfEvent(fn, eventName) {
   if (!('wrappers' in fn)) {
     return null;
-  } else {
-    return fn.wrappers[eventName] || null;
   }
+  return fn.wrappers[eventName] || null;
 }
 
 function setListenerWrapperOfEvent(fn, eventName, wrapper) {
   if (!('wrappers' in fn)) {
     const wrappers = {};
-    wrappers[eventName]  = wrapper;
+    wrappers[eventName] = wrapper;
     fn.wrappers = wrappers;
   } else {
     fn.wrappers[eventName] = wrapper;
   }
 }
 
-export class MiddlEmitter {
+class MiddlEmitter {
   constructor() {
-    this.meta = {events:{}, middleWares:{}};
+    this.meta = { events: {}, middleWares: {} };
   }
   on(eventName, fn, priority) {
     const handler = getHandler(this.meta.events, eventName);
@@ -69,7 +69,7 @@ export class MiddlEmitter {
     const handler = getHandler(this.meta.events, eventName);
     const middleWares = getHandler(this.meta.middleWares, eventName);
 
-    if(!middleWares.isEmpty()) {
+    if (!middleWares.isEmpty()) {
       await applyMiddleWare(middleWares, params);
     }
 
@@ -81,7 +81,7 @@ export class MiddlEmitter {
 
     const next = () => {
       return new Promise((resolve, reject) => {
-        setImmediate(async()=> {
+        setImmediate(async () => {
           try {
             nextListener = itr.next();
             const fn = nextListener.value;
@@ -110,3 +110,6 @@ export class MiddlEmitter {
     return handler.add(fn, priority);
   }
 }
+
+export default MiddlEmitter;
+export { MiddlEmitter };

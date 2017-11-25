@@ -3,30 +3,27 @@
  */
 
 // TODO: provide more performance/memory efficient solution (a priority queue)
-export function createListenerHandler({name}) {
+export default function createListenerHandler({ name }) {
   const listeners = [];
 
-  function getListenerMeta(fn){
+  function getListenerMeta(fn) {
     if (!('me' in fn)) {
       const meta = {};
-      fn.me =  { [name] : meta };
+      fn.me = { [name]: meta };
       return meta;
-    } else {
-      const me = fn.me;
-      if(!(name in me)) {
-        const meta = {};
-        me[name] = meta;
-        return meta;
-      } else {
-        return me[name];
-      }
     }
+
+    const { me } = fn;
+    if (!(name in me)) {
+      const meta = {};
+      me[name] = meta;
+      return meta;
+    }
+
+    return me[name];
   }
 
   return {
-    getListenerMeta(fn){
-      return getListenerMeta(fn);
-    },
     isEmpty() {
       // TODO: provide a more reliable and efficient solution
       return listeners.length === 0;
@@ -41,12 +38,12 @@ export function createListenerHandler({name}) {
     },
     remove(fn) {
       const meta = getListenerMeta(fn);
-      if(!'me' in fn) {
+      if (!('me' in fn)) {
         return;
       }
       const { priority, index } = meta;
       const priorityListeners = listeners[priority] || (listeners[priority] = []);
-      if (index >=0) {
+      if (index >= 0) {
         priorityListeners[index] = undefined;
       }
     },
@@ -58,7 +55,7 @@ export function createListenerHandler({name}) {
       let stepI = -1;
       let stepJ = 0;
       const next = () => {
-        if(stepI === -1) {
+        if (stepI === -1) {
           stepI = listeners.length - 1;
         }
         for (let i = stepI; i >= 0; i -= 1) {
@@ -66,17 +63,17 @@ export function createListenerHandler({name}) {
             for (let j = stepJ; j < listeners[i].length; j += 1) {
               stepJ = j + 1;
               if (listeners[i][j]) {
-                return {value: listeners[i][j], done: false};
+                return { value: listeners[i][j], done: false };
               }
             }
             stepJ = 0;
           }
           stepI = i - 1;
         }
-        return {value: undefined, done: true};
+        return { value: undefined, done: true };
       };
 
-      return {next};
+      return { next };
     }
   };
 }
