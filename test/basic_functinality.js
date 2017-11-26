@@ -36,6 +36,19 @@ describe('MiddlEmitter basic functionality', function () {
         });
       });
     });
+    it('should add listener to multiple event', function () {
+      const emitter = new MiddlEmitter();
+      const calls = [];
+      emitter.on('test1 test2 test3', (eventName) => {
+        calls.push(eventName);
+      });
+      return emitter.emit('test1', 'test1')
+        .then(() => emitter.emit('test2', 'test2'))
+        .then(() => emitter.emit('test3', 'test3'))
+        .then(() => {
+          expect(calls, 'expect to listener receive event').to.deep.equal(['test1', 'test2', 'test3']);
+        });
+    });
   });
 
   describe('#off', function () {
@@ -63,6 +76,19 @@ describe('MiddlEmitter basic functionality', function () {
         .then(() => emitter.emit('test'))
         .then(() => {
           expect(callCounter, 'expect to receive only one emit').to.equal(1);
+        });
+    });
+    it('should add listener to multiple event', function () {
+      const emitter = new MiddlEmitter();
+      const calls = [];
+      emitter.once('test1 test2 test3', (eventName) => {
+        calls.push(eventName);
+      });
+      return emitter.emit('test1', 'test1')
+        .then(() => emitter.emit('test2', 'test2'))
+        .then(() => emitter.emit('test3', 'test3'))
+        .then(() => {
+          expect(calls, 'expect to listener receive event').to.deep.equal(['test1', 'test2', 'test3']);
         });
     });
   });

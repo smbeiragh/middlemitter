@@ -49,15 +49,20 @@ class MiddlEmitter {
     this.meta = { events: {}, middleWares: {} };
   }
   on(eventName, fn, priority) {
-    const handler = getHandler(this.meta.events, eventName);
-    return handler.add(fn, priority);
+    eventName.split(' ').forEach((eventName) => {
+      const handler = getHandler(this.meta.events, eventName);
+      handler.add(fn, priority);
+    });
+    return fn;
   }
   once(eventName, fn, priority) {
-    const wrapper = this.on(eventName, (...params) => {
-      this.off(eventName, wrapper);
-      return fn(...params);
-    }, priority);
-    setListenerWrapperOfEvent(fn, eventName, wrapper);
+    eventName.split(' ').forEach((eventName) => {
+      const wrapper = this.on(eventName, (...params) => {
+        this.off(eventName, wrapper);
+        return fn(...params);
+      }, priority);
+      setListenerWrapperOfEvent(fn, eventName, wrapper);
+    });
     return fn;
   }
   off(eventName, fn) {
@@ -105,7 +110,7 @@ class MiddlEmitter {
 
     return next();
   }
-  use(eventName, fn, priority) {
+  use(eventName, fn, priority = 0) {
     const handler = getHandler(this.meta.middleWares, eventName);
     return handler.add(fn, priority);
   }
