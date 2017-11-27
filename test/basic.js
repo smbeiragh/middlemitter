@@ -1,3 +1,7 @@
+/**
+ * Created by sajjad on 11/24/17.
+ */
+/* eslint no-undef: 0 */
 import chai, { expect, assert } from 'chai';
 import { MiddlEmitter } from './../src';
 
