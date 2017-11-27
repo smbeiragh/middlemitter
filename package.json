@@ -1,6 +1,6 @@
 {
   "name": "middlemitter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "build/index.js",
   "author": "smbeiragh <smbeiragh@gmail.com>",
   "keywords": [
@@ -23,7 +23,8 @@
     "start": "",
     "babel": "./node_modules/.bin/babel src --out-dir build",
     "serve": "babel src --out-dir build --watch",
-    "prepublish": "yarn run babel"
+    "prepare": "yarn run babel",
+    "prepublishOnly": "yarn run babel"
   },
   "engines": {
     "node": ">=6"
