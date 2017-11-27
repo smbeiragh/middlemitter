@@ -111,8 +111,32 @@ class MiddlEmitter {
     return next();
   }
   use(eventName, fn, priority = 0) {
+    let fns;
+    let finalPriority = priority;
+    const args = [...arguments]; // eslint-disable-line prefer-rest-params
+    if (priority.constructor !== Number) {
+      fns = Array.prototype.slice.apply(args, [1, args.length - 1]);
+      console.log(args, fns);
+      const lastArg = args[args.length - 1];
+      if (typeof lastArg === 'number') {
+        finalPriority = lastArg;
+      } else {
+        finalPriority = 0;
+        fns.push(args[args.length - 1]);
+      }
+    }
     const handler = getHandler(this.meta.middleWares, eventName);
-    return handler.add(fn, priority);
+
+    if (fns) {
+      fns.forEach((fn) => {
+        console.log(fn, finalPriority);
+        handler.add(fn, finalPriority);
+      });
+    } else {
+      handler.add(fn, priority);
+    }
+
+    return fn;
   }
 }
 

@@ -62,12 +62,47 @@ describe('Middleware', function() {
         await next();
       }, 15);
 
-      return emitter.emit('test',[]).then(()=>{
-        expect(receivedCalls, 'expect to call middleware from height to low priority an in order').to.deep.equal([1,2,3,4,5]);
+      return emitter.emit('test', []).then(() => {
+        expect(
+          receivedCalls,
+          'expect to call middleware from height to low priority an in order'
+        ).to.deep.equal([1, 2, 3, 4, 5]);
       });
     });
 
-    it('should should skip next middleware', function() {
+    it('should apply multiple middleware at once with priority', function () {
+      const emitter = new MiddlEmitter();
+      let receivedParams;
+      const calls = [];
+      emitter.on('test', (...params) => {
+        receivedParams = params;
+      });
+      emitter.use(
+        'test',
+        async (params, next) => {
+          calls.push(3)
+          await next();
+        },
+        10
+      );
+      emitter.use(
+        'test',
+        async (params, next) => {
+          calls.push(1)
+          await next();
+        },
+        async (params, next) => {
+          calls.push(2)
+          await next();
+        },
+        11
+      );
+      return emitter.emit('test', 1, 2, 3).then(() => {
+        expect(calls, 'expect to apply middleware that added at once with priority').to.deep.equal([1, 2, 3]);
+      });
+    });
+
+    it('should should skip next middleware', function () {
       const emitter = new MiddlEmitter();
       let receivedCalls;
       emitter.on('test', (calls) => {
@@ -83,7 +118,7 @@ describe('Middleware', function() {
         await next();
       });
 
-      return emitter.emit('test',[]).then(()=>{
+      return emitter.emit('test', []).then(() => {
         expect(receivedCalls, 'expect to skip next middleware').to.deep.equal([1]);
       });
     });

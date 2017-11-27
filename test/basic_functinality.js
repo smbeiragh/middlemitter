@@ -163,5 +163,27 @@ describe('MiddlEmitter basic functionality', function () {
         expect(receivedParams, 'expect to apply middleware before executing of listeners').to.deep.equal([2, 3, 4]);
       });
     });
+
+    it('should apply multiple middleware at once', function () {
+      const emitter = new MiddlEmitter();
+      let receivedParams;
+      emitter.on('test', (...params) => {
+        receivedParams = params;
+      });
+      emitter.use(
+        'test',
+        async (params, next) => {
+          params.map((item, i) => { params[i] = item + 1; return params[i]; });
+          await next();
+        },
+        async (params, next) => {
+          params.map((item, i) => { params[i] = item + 1; return params[i]; });
+          await next();
+        }
+      );
+      return emitter.emit('test', 1, 2, 3).then(() => {
+        expect(receivedParams, 'expect to apply middleware that added at once').to.deep.equal([3, 4, 5]);
+      });
+    });
   });
 });

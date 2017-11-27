@@ -105,6 +105,37 @@ emitter.on('test', (a,b,c) => {
 emitter.emit('test', 'a', 'b', 'c');
 ```
 
+Add middleware on test event at once
+```
+emitter.use(
+  'test',
+  async (params, next) => {
+    const [a,b,c] = params;
+    // Mutate params array
+    params[0] = `{${a}}`;
+    params[1] = `{${b}}`;
+    params[2] = `{${c}}`;
+    await next();
+  },
+  async (params, next) => {
+    const [a,b,c] = params;
+    // Mutate params array
+    params[0] = `(${a})`;
+    params[1] = `(${b})`;
+    params[2] = `(${c})`;
+    await next();
+  },
+  10 // priority optional, default: 0
+);
+
+emitter.on('test', (a,b,c) => {
+  // This will log ({a})({b})({c})
+  console.log(a,b,c);
+});
+
+emitter.emit('test', 'a', 'b', 'c');
+```
+
 Async listeners
 ```
 const delay = (ms) => new Promise((resolve, reject) => {
