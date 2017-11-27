@@ -3,6 +3,20 @@
   "version": "1.0.0",
   "main": "build/index.js",
   "author": "smbeiragh <smbeiragh@gmail.com>",
+  "keywords": [
+    "middleware",
+    "event-emitter",
+    "emitter",
+    "event",
+    "async"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smbeiragh/middlemitter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/smbeiragh/middlemitter/issues"
+  },
   "license": "MIT",
   "scripts": {
     "test": "mocha --require babel-register",
@@ -12,7 +26,7 @@
     "prepublish": "yarn run babel"
   },
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=6"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

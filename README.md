@@ -1,11 +1,10 @@
-# Middle Emitter
+# middlemitter
 
-Event Emitter + Middleware for node js.
+Middleware + Event Emitter for node.js
 
 1. async middlewares
 2. async/sync event listeners
 3. support priority for both middlewares and event listeners
-
 
 ## Installation
 
@@ -20,7 +19,7 @@ Using npm:
 npm install middlemitter
 ```
 
-##  Usage
+## Usage
 
 Importing
 ```
