@@ -152,6 +152,16 @@ emitter.on('test', (a,b,c) => {
 });
 ```
 
+##Contributing
+1. Fork repository
+2. Commit your code on feature/branch or bugfix/branch
+3. Write tests for new feature or bugs as needed
+3. All codes should pass eslint guide
+
+##TODO
+1. TODO(s) in listener_handler module
+2. Improve README.md
+
 ##License
 MIT License
 
