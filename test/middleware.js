@@ -1,14 +1,13 @@
 /**
  * Created by sajjad on 11/24/17.
  */
-/* eslint no-undef: 0 */
-import chai, {expect, assert} from 'chai';
+import 'babel-polyfill';
+import { expect } from 'chai';
 import { MiddlEmitter } from './../src';
 
-//var assert = require('assert');
-describe('Middleware', function() {
-  describe('#emit', function() {
-    it('should apply middleware in order', function() {
+describe('Middleware', () => {
+  describe('#emit', () => {
+    it('should apply middleware in order', () => {
       const emitter = new MiddlEmitter();
       let receivedCalls;
       emitter.on('test', (calls) => {
@@ -25,12 +24,12 @@ describe('Middleware', function() {
         await next();
       });
 
-      return emitter.emit('test',[]).then(()=>{
-        expect(receivedCalls, 'expect to call middleware in order').to.deep.equal([1,2]);
+      return emitter.emit('test', []).then(() => {
+        expect(receivedCalls, 'expect to call middleware in order').to.deep.equal([1, 2]);
       });
     });
 
-    it('should apply middleware with priority', function() {
+    it('should apply middleware with priority', () => {
       const emitter = new MiddlEmitter();
       let receivedCalls;
       emitter.on('test', (calls) => {
@@ -65,12 +64,12 @@ describe('Middleware', function() {
       return emitter.emit('test', []).then(() => {
         expect(
           receivedCalls,
-          'expect to call middleware from height to low priority an in order'
+          'expect to call middleware from height to low priority an in order',
         ).to.deep.equal([1, 2, 3, 4, 5]);
       });
     });
 
-    it('should apply multiple middleware at once with priority', function () {
+    it('should apply multiple middleware at once with priority', () => {
       const emitter = new MiddlEmitter();
       let receivedParams;
       const calls = [];
@@ -80,36 +79,37 @@ describe('Middleware', function() {
       emitter.use(
         'test',
         async (params, next) => {
-          calls.push(3)
+          calls.push(3);
           await next();
         },
-        10
+        10,
       );
       emitter.use(
         'test',
         async (params, next) => {
-          calls.push(1)
+          calls.push(1);
           await next();
         },
         async (params, next) => {
-          calls.push(2)
+          calls.push(2);
           await next();
         },
-        11
+        11,
       );
       return emitter.emit('test', 1, 2, 3).then(() => {
         expect(calls, 'expect to apply middleware that added at once with priority').to.deep.equal([1, 2, 3]);
+        expect(receivedParams, 'expect to pass params').to.deep.equal([1, 2, 3]);
       });
     });
 
-    it('should should skip next middleware', function () {
+    it('should should skip next middleware', () => {
       const emitter = new MiddlEmitter();
       let receivedCalls;
       emitter.on('test', (calls) => {
         receivedCalls = calls;
       });
 
-      emitter.use('test', async ([calls], next) => {
+      emitter.use('test', async ([calls]) => {
         calls.push(1);
       });
 

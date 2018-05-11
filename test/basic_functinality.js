@@ -2,12 +2,13 @@
  * Created by sajjad on 11/24/17.
  */
 /* eslint no-undef: 0 */
-import chai, { expect, assert } from 'chai';
+import 'babel-polyfill';
+import { expect } from 'chai';
 import { MiddlEmitter } from './../src';
 
-describe('MiddlEmitter basic functionality', function () {
-  describe('#on', function () {
-    it('should add listener', function () {
+describe('MiddlEmitter basic functionality', () => {
+  describe('#on', () => {
+    it('should add listener', () => {
       const emitter = new MiddlEmitter();
       let called = false;
       emitter.on('test', () => {
@@ -17,7 +18,7 @@ describe('MiddlEmitter basic functionality', function () {
         expect(called, 'expect to listener receive event').to.equal(true);
       });
     });
-    it('should add isolate different events', function () {
+    it('should add isolate different events', () => {
       const emitter = new MiddlEmitter();
       let test1Called = false;
       let test2Called = false;
@@ -36,7 +37,7 @@ describe('MiddlEmitter basic functionality', function () {
         });
       });
     });
-    it('should add listener to multiple event', function () {
+    it('should add listener to multiple event', () => {
       const emitter = new MiddlEmitter();
       const calls = [];
       emitter.on('test1 test2 test3', (eventName) => {
@@ -51,8 +52,8 @@ describe('MiddlEmitter basic functionality', function () {
     });
   });
 
-  describe('#off', function () {
-    it('should remove listener', function () {
+  describe('#off', () => {
+    it('should remove listener', () => {
       const emitter = new MiddlEmitter();
       let called = false;
       const listener = emitter.on('test', () => {
@@ -65,11 +66,11 @@ describe('MiddlEmitter basic functionality', function () {
     });
   });
 
-  describe('#once', function () {
-    it('should call one time', function () {
+  describe('#once', () => {
+    it('should call one time', () => {
       const emitter = new MiddlEmitter();
       let callCounter = 0;
-      const listener = emitter.once('test', () => {
+      emitter.once('test', () => {
         callCounter += 1;
       });
       return emitter.emit('test')
@@ -78,7 +79,7 @@ describe('MiddlEmitter basic functionality', function () {
           expect(callCounter, 'expect to receive only one emit').to.equal(1);
         });
     });
-    it('should add listener to multiple event', function () {
+    it('should add listener to multiple event', () => {
       const emitter = new MiddlEmitter();
       const calls = [];
       emitter.once('test1 test2 test3', (eventName) => {
@@ -93,8 +94,8 @@ describe('MiddlEmitter basic functionality', function () {
     });
   });
 
-  describe('#off', function () {
-    it('should remove listener added via once using returned listener', function () {
+  describe('#off', () => {
+    it('should remove listener added via once using returned listener', () => {
       const emitter = new MiddlEmitter();
       let called = false;
       const listener = emitter.once('test', () => {
@@ -107,7 +108,7 @@ describe('MiddlEmitter basic functionality', function () {
       });
     });
 
-    it('should remove listener added via once using listener itself', function () {
+    it('should remove listener added via once using listener itself', () => {
       const emitter = new MiddlEmitter();
       let called = false;
       const listener = () => {
@@ -121,8 +122,8 @@ describe('MiddlEmitter basic functionality', function () {
     });
   });
 
-  describe('#emit', function () {
-    it('should pass many parameters to listeners', function () {
+  describe('#emit', () => {
+    it('should pass many parameters to listeners', () => {
       const emitter = new MiddlEmitter();
       let receivedParams;
       emitter.once('test', (...params) => {
@@ -133,7 +134,7 @@ describe('MiddlEmitter basic functionality', function () {
       });
     });
 
-    it('should execute listeners on order', function () {
+    it('should execute listeners on order', () => {
       const emitter = new MiddlEmitter();
       const calls = [];
       emitter.on('test', () => {
@@ -148,15 +149,17 @@ describe('MiddlEmitter basic functionality', function () {
     });
   });
 
-  describe('#use', function () {
-    it('should apply middleware', function () {
+  describe('#use', () => {
+    it('should apply middleware', () => {
       const emitter = new MiddlEmitter();
       let receivedParams;
       emitter.on('test', (...params) => {
         receivedParams = params;
       });
       emitter.use('test', async (params, next) => {
-        params.map((item, i) => params[i] = item + 1);
+        params.forEach((item, i) => {
+          params[i] = item + 1; // eslint-disable-line no-param-reassign
+        });
         await next();
       });
       return emitter.emit('test', 1, 2, 3).then(() => {
@@ -164,7 +167,7 @@ describe('MiddlEmitter basic functionality', function () {
       });
     });
 
-    it('should apply multiple middleware at once', function () {
+    it('should apply multiple middleware at once', () => {
       const emitter = new MiddlEmitter();
       let receivedParams;
       emitter.on('test', (...params) => {
@@ -173,13 +176,17 @@ describe('MiddlEmitter basic functionality', function () {
       emitter.use(
         'test',
         async (params, next) => {
-          params.map((item, i) => { params[i] = item + 1; return params[i]; });
+          params.forEach((item, i) => {
+            params[i] = item + 1; // eslint-disable-line no-param-reassign
+          });
           await next();
         },
         async (params, next) => {
-          params.map((item, i) => { params[i] = item + 1; return params[i]; });
+          params.forEach((item, i) => {
+            params[i] = item + 1; // eslint-disable-line no-param-reassign
+          });
           await next();
-        }
+        },
       );
       return emitter.emit('test', 1, 2, 3).then(() => {
         expect(receivedParams, 'expect to apply middleware that added at once').to.deep.equal([3, 4, 5]);

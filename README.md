@@ -2,34 +2,43 @@
 
 Middleware + Event Emitter for node.js
 
+[![Build Status](https://travis-ci.org/smbeiragh/middlemitter.svg?branch=master)](https://travis-ci.org/smbeiragh/middlemitter)
+[![codecov](https://codecov.io/gh/smbeiragh/middlemitter/branch/master/graph/badge.svg)](https://codecov.io/gh/smbeiragh/middlemitter)
+
+[![NPM](https://nodei.co/npm/middlemitter.png)](https://nodei.co/npm/middlemitter/)
+
 1. async middlewares
 2. async/sync event listeners
 3. support priority for both middlewares and event listeners
+
+## Environment
+Every ES5 compliant environment + Promise Api & Symbol.iterator.
+In case of unsupported environments you can use appropriate polyfill(s).
 
 ## Installation
 
 Using yarn: 
 
-```
+```bash
 yarn add middlemitter
 ``` 
 Using npm:
 
-```
+```bash
 npm install middlemitter
 ```
 
 ## Usage
 
 Importing
-```
+```js
 import { MiddlEmitter } from 'middlemitter';
 
 const emitter = new MiddlEmitter();
 ```
 
 Add/Remove listener on test event
-```
+```js
 const listener = emitter.on('test', (a,b,c) => {
   console.log('>>', a, b, c);
 });
@@ -38,7 +47,7 @@ emitter.off('test', listener);
 ```
 
 Add listener on test event with priority
-```
+```js
 emitter.on('test', (a,b,c) => {
   console.log('second');
 }, 10);
@@ -50,12 +59,12 @@ emitter.on('test', (a,b,c) => {
 
 Emit test event
 Returns promise that resolves when all listeners executed.
-```
+```js
 emitter.emit('test', 'a', 'b', 'c');
 ```
 
 Use middleware on test event 
-```
+```js
 emitter.use('test', async (params) => {
    const [a,b,c] = params;
    // Mutate params array
@@ -75,7 +84,7 @@ emitter.emit('test', 'a', 'b', 'c');
 ```
 
 Use middleware on test event with specific priority
-```
+```js
 emitter.use('test', async (params) => {
    const [a,b,c] = params;
    // Mutate params array
@@ -105,7 +114,7 @@ emitter.emit('test', 'a', 'b', 'c');
 ```
 
 Add middleware on test event at once
-```
+```js
 emitter.use(
   'test',
   async (params, next) => {
@@ -136,7 +145,7 @@ emitter.emit('test', 'a', 'b', 'c');
 ```
 
 Async listeners
-```
+```js
 const delay = (ms) => new Promise((resolve, reject) => {
     setTimeout(() => { resolve(); }, ms);
   });
@@ -159,7 +168,8 @@ emitter.on('test', (a,b,c) => {
 
 ## TODO
 1. TODO(s) in listener_handler module
-2. Improve README.md
+3. Improve test coverage
+4. Improve README.md
 
 ## License
 MIT License

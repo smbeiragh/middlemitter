@@ -1,19 +1,19 @@
 /**
  * Created by sajjad on 11/24/17.
  */
-/* eslint no-undef: 0 */
-import chai, { expect, assert } from 'chai';
+import 'babel-polyfill';
+import { expect } from 'chai';
 import { MiddlEmitter } from './../src';
 
-const delay = ms => new Promise((resolve, reject) => {
+const delay = ms => new Promise((resolve) => {
   setTimeout(() => {
     resolve();
   }, ms);
 });
 
-describe('MiddlEmitter advance features', function () {
-  describe('#on', function () {
-    it('should add listeners with different priority', function () {
+describe('MiddlEmitter advance features', () => {
+  describe('#on', () => {
+    it('should add listeners with different priority', () => {
       const emitter = new MiddlEmitter();
       const calls = [];
       emitter.on('test', () => {
@@ -42,12 +42,12 @@ describe('MiddlEmitter advance features', function () {
       });
     });
 
-    it('should add same listener to multiple events', function () {
+    it('should add same listener to multiple events', () => {
       const emitter = new MiddlEmitter();
       const calls = [];
       const listener = (log) => {
         calls.push(log);
-      }
+      };
 
       emitter.on('test1', listener);
 
@@ -62,8 +62,8 @@ describe('MiddlEmitter advance features', function () {
     });
   });
 
-  describe('#once', function () {
-    it('should add listeners with different priority', function () {
+  describe('#once', () => {
+    it('should add listeners with different priority', () => {
       const emitter = new MiddlEmitter();
       const calls = [];
       emitter.once('test', () => {
@@ -92,12 +92,12 @@ describe('MiddlEmitter advance features', function () {
       });
     });
 
-    it('should add same listener to multiple events', function () {
+    it('should add same listener to multiple events', () => {
       const emitter = new MiddlEmitter();
       let calls = [];
       const listener = (log) => {
         calls.push(log);
-      }
+      };
 
       emitter.once('test1', listener);
 
@@ -117,8 +117,8 @@ describe('MiddlEmitter advance features', function () {
     });
   });
 
-  describe('#off', function () {
-    it('should remove listener with priority', function () {
+  describe('#off', () => {
+    it('should remove listener with priority', () => {
       const emitter = new MiddlEmitter();
       let called = false;
       const listener = emitter.on('test', () => {
@@ -130,12 +130,12 @@ describe('MiddlEmitter advance features', function () {
       });
     });
 
-    it('should remove listener when same listener attached to multiple events', function () {
+    it('should remove listener when same listener attached to multiple events', () => {
       const emitter = new MiddlEmitter();
       const calls = [];
       const listener = (log) => {
         calls.push(log);
-      }
+      };
 
       emitter.on('test1', listener);
 
@@ -154,12 +154,12 @@ describe('MiddlEmitter advance features', function () {
         });
     });
 
-    it('should remove listener when same listener attached to multiple events via once method', function () {
+    it('should remove listener when same listener attached to multiple events via once method', () => {
       const emitter = new MiddlEmitter();
       const calls = [];
       const listener = (log) => {
         calls.push(log);
-      }
+      };
 
       emitter.once('test1', listener);
 
@@ -175,16 +175,15 @@ describe('MiddlEmitter advance features', function () {
         .then(() => {
           expect(
             calls,
-            'expect to remove listener from an event while it\'s attached via once and it\'s attached to other events'
+            'expect to remove listener from an event while it\'s attached via once and it\'s attached to other events',
           ).to.deep.equal(['test2 log', 'test3 log']);
         });
     });
   });
 
-  describe('async listeners', function () {
-    it('should await on async listeners', function () {
+  describe('async listeners', () => {
+    it('should await on async listeners', () => {
       const emitter = new MiddlEmitter();
-      const calls = [];
       let start;
       let finish;
       emitter.on('test', () => {
@@ -210,7 +209,7 @@ describe('MiddlEmitter advance features', function () {
       }).then(() => {
         expect(
           (finish - start) >= 400,
-          'expect to await on async listeners and execute next listener just after async listener exec finished'
+          'expect to await on async listeners and execute next listener just after async listener exec finished',
         ).to.equal(true);
       });
     });

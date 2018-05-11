@@ -2,40 +2,12 @@
 // Copy this file, and add rule overrides as needed.
 {
     "extends": "eslint-config-airbnb",
-    "ecmaFeatures": {
-
-    },
     "env": {
         "browser": true,
         "node": true
     },
-    "rules": {
-        "react/prop-types": 0,
-        "arrow-body-style": [1, "as-needed"],
-        "prefer-arrow-callback": 0,
-        "prefer-template": 1,
-        "max-len": [2, 120, 2, {
-            "ignoreUrls": true,
-            "ignoreComments": false
-        }],
-        "no-var": 0,                     // http://eslint.org/docs/rules/no-var
-        "comma-dangle": [2, "never"],    // http://eslint.org/docs/rules/comma-dangle
-        "padded-blocks": [1, "never"],   // http://eslint.org/docs/rules/padded-blocks
-        "no-sparse-arrays": 1,           // http://eslint.org/docs/rules/no-sparse-arrays
-        "dot-notation": [2, {            // http://eslint.org/docs/rules/dot-notation
-            "allowKeywords": true,
-            "allowPattern": "^_?[a-z]+(_[a-z]+)+$"
-        }],
-        "no-param-reassign": 0,
-        "no-nested-ternary": 1,
-        "no-shadow": 1,
-        "new-cap": 1,
-        "consistent-return": 1,
-        "no-loop-func": 1,
-        "no-unused-vars": [1, {          // http://eslint.org/docs/rules/no-unused-vars
-          "vars": "local",
-          "args": "after-used"
-        }],
-        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }]
+    "globals": {
+        "it": true,
+        "describe": true
     }
 }
